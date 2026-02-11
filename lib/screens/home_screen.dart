@@ -562,7 +562,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         onToggleParent: (value) async {
           final bloc = context.read<MedicineBloc>();
-          if (!value) {
+          if (value == false) {
             if (isManuallyEnabled) {
               bloc.add(
                 RemoveManualEnableForDateEvent(medicine.id, selectedDate),

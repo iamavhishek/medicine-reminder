@@ -9,6 +9,7 @@ import 'package:ausadhi_khau/repositories/medicine_repository.dart';
 import 'package:ausadhi_khau/screens/add_medicine_screen.dart';
 import 'package:ausadhi_khau/screens/calendar_screen.dart';
 import 'package:ausadhi_khau/screens/data_transfer_screen.dart';
+import 'package:ausadhi_khau/screens/dose_details_screen.dart';
 import 'package:ausadhi_khau/screens/home_screen.dart';
 import 'package:ausadhi_khau/screens/insights_screen.dart';
 import 'package:ausadhi_khau/screens/onboarding_screen.dart';
@@ -159,6 +160,16 @@ class _MedicineReminderAppState extends State<MedicineReminderApp> {
           builder: (context, state) => const OnboardingScreen(),
         ),
         GoRoute(
+          path: '/dose-details',
+          builder: (context, state) {
+            final timeStr = state.uri.queryParameters['time'];
+            if (timeStr == null) return const HomeScreen();
+            final time = DateTime.tryParse(timeStr);
+            if (time == null) return const HomeScreen();
+            return DoseDetailsScreen(scheduledTime: time);
+          },
+        ),
+        GoRoute(
           path: '/add',
           builder: (context, state) {
             // Accept DateTime as extra to pre-fill start date from calendar
@@ -227,6 +238,14 @@ class _MedicineReminderAppState extends State<MedicineReminderApp> {
     // Initialize the lifecycle observer
     _lifecycleObserver = AppLifecycleObserver(context.read<MedicineBloc>());
     WidgetsBinding.instance.addObserver(_lifecycleObserver);
+
+    // Listen for notification taps
+    NotificationService().onNotificationTap.listen((payload) {
+      if (payload != null) {
+        debugPrint('Navigating to dose details for: $payload');
+        _router.push('/dose-details?time=$payload');
+      }
+    });
   }
 
   @override

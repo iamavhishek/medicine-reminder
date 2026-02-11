@@ -29,6 +29,10 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  /// Stream controller for notification taps
+  final _onNotificationStream = StreamController<String?>.broadcast();
+  Stream<String?> get onNotificationTap => _onNotificationStream.stream;
+
   bool _isInitialized = false;
 
   /// Initialize the notification service with all required settings
@@ -88,10 +92,27 @@ class NotificationService {
       await _notificationsPlugin.initialize(
         settings: initializationSettings,
         onDidReceiveNotificationResponse: (NotificationResponse response) {
-          debugPrint('Notification tapped: ${response.id}');
+          debugPrint(
+            'Notification tapped: ${response.id} with payload: ${response.payload}',
+          );
+          _onNotificationStream.add(response.payload);
         },
         onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
       );
+
+      // Check if app was launched via notification
+      final NotificationAppLaunchDetails? launchDetails =
+          await _notificationsPlugin.getNotificationAppLaunchDetails();
+
+      if (launchDetails?.didNotificationLaunchApp ?? false) {
+        final String? payload = launchDetails?.notificationResponse?.payload;
+        debugPrint('App launched via notification with payload: $payload');
+        // Delay slightly to ensure listeners are ready
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _onNotificationStream.add(payload);
+        });
+      }
+
       _isInitialized = true;
       debugPrint('NotificationService initialized successfully');
     } catch (e) {
@@ -248,6 +269,7 @@ class NotificationService {
         notificationDetails: platformChannelSpecifics,
         androidScheduleMode:
             AndroidScheduleMode.alarmClock, // Most reliable mode
+        payload: scheduledTime.toIso8601String(), // Pass time as payload
       );
 
       debugPrint(
@@ -319,12 +341,17 @@ class NotificationService {
     }
   }
 
-  /// Generate a unique notification ID that won't collide
-  int generateUniqueId(String medicineId, int offset) {
-    // Use a combination of medicine hash and offset
-    // Limited to 2^31 - 1 for 32-bit int compatibility
-    final hash = medicineId.hashCode.abs() % 2000000;
-    return (hash * 1000) + (offset % 1000);
+  /// Generate a unique notification ID that won't collide.
+  /// Uses a combined hash of the medicine ID and timestamp to ensure every unique
+  /// dose (medicine + time) has a stable and unique notification ID.
+  int generateUniqueId(String medicineId, DateTime scheduledTime) {
+    // Combine medicine ID and time into a single unique string for this specific dose
+    final String doseIdentifier =
+        '${medicineId}_${scheduledTime.millisecondsSinceEpoch}';
+
+    // Use the string hashCode and mask it to a positive 31-bit integer
+    // (Flutter Local Notifications requires 32-bit signed integers)
+    return doseIdentifier.hashCode.abs() & 0x7FFFFFFF;
   }
 
   /// Request exact alarm permission on Android 12+

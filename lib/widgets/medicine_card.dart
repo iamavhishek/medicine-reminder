@@ -18,6 +18,10 @@ class MedicineCard extends StatefulWidget {
   final VoidCallback onEdit;
   final Function(bool) onToggleParent;
   final Function(String, bool) onToggleTime;
+  final bool showToggles;
+  final bool showEdit;
+  final bool showTimes;
+  final bool isExpandedInitial;
 
   const MedicineCard({
     super.key,
@@ -33,6 +37,10 @@ class MedicineCard extends StatefulWidget {
     required this.onEdit,
     required this.onToggleParent,
     required this.onToggleTime,
+    this.showToggles = true,
+    this.showEdit = true,
+    this.showTimes = true,
+    this.isExpandedInitial = false,
   });
 
   @override
@@ -41,6 +49,12 @@ class MedicineCard extends StatefulWidget {
 
 class _MedicineCardState extends State<MedicineCard> {
   bool _isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isExpanded = widget.isExpandedInitial;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +72,13 @@ class _MedicineCardState extends State<MedicineCard> {
         ),
       ),
       child: InkWell(
-        onTap: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
+        onTap: widget.showTimes || widget.showEdit
+            ? () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              }
+            : null,
         borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -103,41 +119,42 @@ class _MedicineCardState extends State<MedicineCard> {
                       ],
                     ),
                   ),
-                  BlocBuilder<MedicineBloc, MedicineState>(
-                    builder: (context, state) {
-                      final isLoading = state is MedicineLoading;
-                      return Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Transform.scale(
-                            scale: 0.8,
-                            child: Switch.adaptive(
-                              value: widget.isEffectivelyActive,
-                              activeThumbColor: theme.colorScheme.primary,
-                              activeTrackColor: theme.colorScheme.primary
-                                  .withValues(alpha: 0.38),
-                              onChanged: isLoading
-                                  ? null
-                                  : (value) {
-                                      widget.onToggleParent(value);
-                                    },
-                            ),
-                          ),
-                          if (isLoading)
-                            SizedBox(
-                              width: 12,
-                              height: 12,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: theme.colorScheme.onSurface.withValues(
-                                  alpha: 0.54,
-                                ),
+                  if (widget.showToggles)
+                    BlocBuilder<MedicineBloc, MedicineState>(
+                      builder: (context, state) {
+                        final isLoading = state is MedicineLoading;
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Transform.scale(
+                              scale: 0.8,
+                              child: Switch.adaptive(
+                                value: widget.isEffectivelyActive,
+                                activeThumbColor: theme.colorScheme.primary,
+                                activeTrackColor: theme.colorScheme.primary
+                                    .withValues(alpha: 0.38),
+                                onChanged: isLoading
+                                    ? null
+                                    : (value) {
+                                        widget.onToggleParent(value);
+                                      },
                               ),
                             ),
-                        ],
-                      );
-                    },
-                  ),
+                            if (isLoading)
+                              SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.54,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
                 ],
               ),
               const SizedBox(height: 4),
@@ -153,7 +170,7 @@ class _MedicineCardState extends State<MedicineCard> {
                 ),
               ),
               const SizedBox(height: 20),
-              if (!_isExpanded)
+              if (widget.showTimes && !_isExpanded)
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -167,101 +184,105 @@ class _MedicineCardState extends State<MedicineCard> {
                     );
                   }).toList(),
                 )
-              else ...[
-                Divider(
-                  height: 32,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                ),
-                ...widget.times.map((t) {
-                  final isTimeDeactivated = widget.medicine.deactivatedTimes
-                      .contains(t);
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.schedule,
-                              size: 16,
-                              color: theme.colorScheme.onSurface.withValues(
-                                alpha: 0.54,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              MedicineUtils.formatTimeOfDayString(t),
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: !isTimeDeactivated
-                                    ? theme.colorScheme.onSurface
-                                    : theme.colorScheme.onSurface.withValues(
-                                        alpha: 0.26,
-                                      ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        BlocBuilder<MedicineBloc, MedicineState>(
-                          builder: (context, state) {
-                            final isLoading = state is MedicineLoading;
-                            return Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Transform.scale(
-                                  scale: 0.7,
-                                  child: Switch.adaptive(
-                                    value:
-                                        widget.isEffectivelyActive &&
-                                        !isTimeDeactivated,
-                                    activeThumbColor: theme.colorScheme.primary,
-                                    activeTrackColor: theme.colorScheme.primary
-                                        .withValues(alpha: 0.38),
-                                    onChanged: isLoading || !widget.isBaseActive
-                                        ? null
-                                        : (value) {
-                                            widget.onToggleTime(t, value);
-                                          },
-                                  ),
+              else if (_isExpanded) ...[
+                if (widget.showTimes)
+                  ...widget.times.map((t) {
+                    final isTimeDeactivated = widget.medicine.deactivatedTimes
+                        .contains(t);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                size: 16,
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.54,
                                 ),
-                                if (isLoading)
-                                  SizedBox(
-                                    width: 10,
-                                    height: 10,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: theme.colorScheme.onSurface
-                                          .withValues(alpha: 0.54),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                MedicineUtils.formatTimeOfDayString(t),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: !isTimeDeactivated
+                                      ? theme.colorScheme.onSurface
+                                      : theme.colorScheme.onSurface.withValues(
+                                          alpha: 0.26,
+                                        ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (widget.showToggles)
+                            BlocBuilder<MedicineBloc, MedicineState>(
+                              builder: (context, state) {
+                                final isLoading = state is MedicineLoading;
+                                return Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Transform.scale(
+                                      scale: 0.7,
+                                      child: Switch.adaptive(
+                                        value:
+                                            widget.isEffectivelyActive &&
+                                            !isTimeDeactivated,
+                                        activeThumbColor:
+                                            theme.colorScheme.primary,
+                                        activeTrackColor: theme
+                                            .colorScheme
+                                            .primary
+                                            .withValues(alpha: 0.38),
+                                        onChanged:
+                                            isLoading || !widget.isBaseActive
+                                            ? null
+                                            : (value) {
+                                                widget.onToggleTime(t, value);
+                                              },
+                                      ),
                                     ),
-                                  ),
-                              ],
-                            );
-                          },
+                                    if (isLoading)
+                                      SizedBox(
+                                        width: 10,
+                                        height: 10,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: theme.colorScheme.onSurface
+                                              .withValues(alpha: 0.54),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
+                        ],
+                      ),
+                    );
+                  }),
+                if (widget.showEdit) ...[
+                  const SizedBox(height: 8),
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: widget.onEdit,
+                      icon: const Icon(Icons.edit_outlined, size: 14),
+                      label: const Text(
+                        'EDIT DETAILS',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
                         ),
-                      ],
-                    ),
-                  );
-                }),
-                const SizedBox(height: 8),
-                Center(
-                  child: TextButton.icon(
-                    onPressed: widget.onEdit,
-                    icon: const Icon(Icons.edit_outlined, size: 14),
-                    label: const Text(
-                      'EDIT DETAILS',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1,
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: theme.colorScheme.onSurface,
                       ),
                     ),
-                    style: TextButton.styleFrom(
-                      foregroundColor: theme.colorScheme.onSurface,
-                    ),
                   ),
-                ),
+                ],
               ],
               if (widget.medicine.takeWithFood) ...[
                 const SizedBox(height: 16),

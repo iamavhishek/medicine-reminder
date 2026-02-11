@@ -366,7 +366,7 @@ class MedicineRepository {
                 'dosage': dosage,
                 'id': _notificationService.generateUniqueId(
                   medicine.id,
-                  currentOffset,
+                  scheduledTime,
                 ),
                 'scheduledTime': scheduledTime,
                 'takeWithFood': medicine.takeWithFood,
@@ -421,7 +421,7 @@ class MedicineRepository {
                   'dosage': dosage,
                   'id': _notificationService.generateUniqueId(
                     medicine.id,
-                    currentOffset,
+                    scheduledTime,
                   ),
                   'scheduledTime': scheduledTime,
                   'takeWithFood': medicine.takeWithFood,
@@ -485,7 +485,7 @@ class MedicineRepository {
                   'dosage': dosage,
                   'id': _notificationService.generateUniqueId(
                     medicine.id,
-                    currentOffset,
+                    scheduledTime,
                   ),
                   'scheduledTime': scheduledTime,
                   'takeWithFood': medicine.takeWithFood,
@@ -526,7 +526,7 @@ class MedicineRepository {
               'dosage': dosage,
               'id': _notificationService.generateUniqueId(
                 medicine.id,
-                currentOffset,
+                scheduledTime,
               ),
               'scheduledTime': scheduledTime,
               'takeWithFood': medicine.takeWithFood,
