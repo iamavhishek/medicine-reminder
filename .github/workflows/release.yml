@@ -72,13 +72,13 @@ jobs:
       - name: Compress macOS App
         run: |
           cd build/macos/Build/Products/Release
-          zip -r ../../../../Ausadhi-Khau-macOS.zip Ausadhi\ Khau.app
+          zip -r Ausadhi-Khau-macOS.zip "Ausadhi Khau.app"
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-app
-          path: Ausadhi-Khau-macOS.zip
+          path: build/macos/Build/Products/Release/Ausadhi-Khau-macOS.zip
 
   create-release:
     name: Create Github Release
@@ -101,8 +101,8 @@ jobs:
         with:
           name: Release ${{ github.ref_name }}
           files: |
-            Ausadhi-Khau.apk
-            Ausadhi-Khau-macOS.zip
+            android-apk/Ausadhi-Khau.apk
+            macos-app/Ausadhi-Khau-macOS.zip
           generate_release_notes: true
           draft: false
           prerelease: false
