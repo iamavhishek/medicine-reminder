@@ -1,14 +1,15 @@
 import 'dart:io';
 
+import 'package:ausadhi_khau/blocs/medicine/medicine_bloc.dart';
+import 'package:ausadhi_khau/blocs/medicine/medicine_event.dart';
+import 'package:ausadhi_khau/repositories/medicine_repository.dart';
+import 'package:ausadhi_khau/services/hive_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:medicine_remainder_app/blocs/medicine/medicine_bloc.dart';
-import 'package:medicine_remainder_app/blocs/medicine/medicine_event.dart';
-import 'package:medicine_remainder_app/repositories/medicine_repository.dart';
-import 'package:medicine_remainder_app/services/hive_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -25,13 +26,11 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
   Future<void> _shareDataAsFile() async {
     setState(() => _isGenerating = true);
     try {
-      // Generate export data
       final data = HiveService().exportMedicines();
       final dateStr = DateFormat('yyyyMMdd_HHmm').format(DateTime.now());
       final fileName = 'medicine_backup_$dateStr.mrbackup';
 
       if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
-        // Desktop: Use Save As dialog
         final String? outputFile = await FilePicker.platform.saveFile(
           dialogTitle: 'Save Backup File',
           fileName: fileName,
@@ -53,43 +52,40 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
           }
         }
       } else {
-        // Mobile: Use Share Sheet (which includes "Save to Files")
-        // Get temporary directory
         final directory = await getTemporaryDirectory();
         if (!await directory.exists()) {
           await directory.create(recursive: true);
         }
 
         final file = File('${directory.path}/$fileName');
-
-        // Write data to file
         await file.writeAsString(data);
 
-        // Share file
+        if (!mounted) return;
         final box = context.findRenderObject() as RenderBox?;
 
-        final result = await Share.shareXFiles(
-          [XFile(file.path)],
-          subject: 'Medicine Reminder Backup',
-          text: 'Backup file generated on $dateStr. Import this in the app.',
-          sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(file.path)],
+            subject: 'Medicine Reminder Backup',
+            text: 'Backup file generated on $dateStr. Import this in the app.',
+            sharePositionOrigin: box != null
+                ? box.localToGlobal(Offset.zero) & box.size
+                : null,
+          ),
         );
-
-        if (result.status == ShareResultStatus.success) {
-          debugPrint('File shared successfully');
-        }
       }
     } catch (e, stackTrace) {
       debugPrint('Error sharing file: $e\n$stackTrace');
       if (mounted) {
+        final errorMessage = e.toString();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to share file: $e'),
+            content: Text('Failed to share file: $errorMessage'),
             duration: const Duration(seconds: 5),
             action: SnackBarAction(
               label: 'Copy Error',
               onPressed: () {
-                // TODO: Implement copy to clipboard if needed
+                Clipboard.setData(ClipboardData(text: errorMessage));
               },
             ),
           ),

@@ -1,9 +1,9 @@
+import 'package:ausadhi_khau/services/hive_service.dart';
+import 'package:ausadhi_khau/services/notification_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:medicine_remainder_app/services/hive_service.dart';
-import 'package:medicine_remainder_app/services/notification_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class OnboardingScreen extends StatefulWidget {

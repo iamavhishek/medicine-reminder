@@ -1,10 +1,10 @@
+import 'package:ausadhi_khau/blocs/medicine/medicine_bloc.dart';
+import 'package:ausadhi_khau/blocs/medicine/medicine_state.dart';
+import 'package:ausadhi_khau/models/medicine.dart';
+import 'package:ausadhi_khau/utils/medicine_utils.dart';
+import 'package:ausadhi_khau/widgets/insights/insights_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medicine_remainder_app/blocs/medicine/medicine_bloc.dart';
-import 'package:medicine_remainder_app/blocs/medicine/medicine_state.dart';
-import 'package:medicine_remainder_app/models/medicine.dart';
-import 'package:medicine_remainder_app/utils/medicine_utils.dart';
-import 'package:medicine_remainder_app/widgets/insights/insights_widgets.dart';
 
 class InsightsScreen extends StatelessWidget {
   const InsightsScreen({super.key});

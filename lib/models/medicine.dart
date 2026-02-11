@@ -1,6 +1,6 @@
+import 'package:ausadhi_khau/models/medicine_schedule.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
-import 'package:medicine_remainder_app/models/medicine_schedule.dart';
 
 part 'medicine.freezed.dart';
 part 'medicine.g.dart';

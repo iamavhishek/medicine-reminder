@@ -1,9 +1,9 @@
+import 'package:ausadhi_khau/models/medicine_schedule.dart';
+import 'package:ausadhi_khau/widgets/add_medicine/day_selector.dart';
+import 'package:ausadhi_khau/widgets/add_medicine/frequency_selector.dart';
+import 'package:ausadhi_khau/widgets/add_medicine/time_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:medicine_remainder_app/models/medicine_schedule.dart';
-import 'package:medicine_remainder_app/widgets/add_medicine/day_selector.dart';
-import 'package:medicine_remainder_app/widgets/add_medicine/frequency_selector.dart';
-import 'package:medicine_remainder_app/widgets/add_medicine/time_selector.dart';
 
 class PhaseConfigSheet extends StatefulWidget {
   final MedicineSchedule initialSchedule;

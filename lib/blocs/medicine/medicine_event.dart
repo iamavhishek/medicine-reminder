@@ -1,5 +1,5 @@
+import 'package:ausadhi_khau/models/medicine.dart';
 import 'package:equatable/equatable.dart';
-import 'package:medicine_remainder_app/models/medicine.dart';
 
 abstract class MedicineEvent extends Equatable {
   const MedicineEvent();

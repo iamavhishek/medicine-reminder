@@ -1,5 +1,5 @@
+import 'package:ausadhi_khau/utils/medicine_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:medicine_remainder_app/utils/medicine_utils.dart';
 
 class TypeSelector extends StatelessWidget {
   final String selectedType;

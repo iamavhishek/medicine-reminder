@@ -61,8 +61,3 @@ analyzer:
 
   plugins:
     - custom_lint
-
-# Add any specific import restrictions here
-forbidden_imports:
-  - "package:http/http.dart"
-  - "dart:io"

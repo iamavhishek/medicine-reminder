@@ -1,9 +1,9 @@
 import 'dart:math';
 
+import 'package:ausadhi_khau/models/medicine.dart';
+import 'package:ausadhi_khau/services/hive_service.dart';
+import 'package:ausadhi_khau/services/notification_service.dart';
 import 'package:flutter/foundation.dart';
-import 'package:medicine_remainder_app/models/medicine.dart';
-import 'package:medicine_remainder_app/services/hive_service.dart';
-import 'package:medicine_remainder_app/services/notification_service.dart';
 
 class MedicineRepository {
   final HiveService _hiveService = HiveService();

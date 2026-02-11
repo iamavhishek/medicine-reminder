@@ -1,13 +1,13 @@
+import 'package:ausadhi_khau/blocs/medicine/medicine_bloc.dart';
+import 'package:ausadhi_khau/blocs/medicine/medicine_event.dart';
+import 'package:ausadhi_khau/blocs/theme_bloc.dart';
+import 'package:ausadhi_khau/services/desktop_service.dart';
+import 'package:ausadhi_khau/services/hive_service.dart';
+import 'package:ausadhi_khau/services/notification_service.dart';
+import 'package:ausadhi_khau/widgets/settings/settings_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:medicine_remainder_app/blocs/medicine/medicine_bloc.dart';
-import 'package:medicine_remainder_app/blocs/medicine/medicine_event.dart';
-import 'package:medicine_remainder_app/blocs/theme_bloc.dart';
-import 'package:medicine_remainder_app/services/desktop_service.dart';
-import 'package:medicine_remainder_app/services/hive_service.dart';
-import 'package:medicine_remainder_app/services/notification_service.dart';
-import 'package:medicine_remainder_app/widgets/settings/settings_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -102,7 +102,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (val) {
                             final granted = await NotificationService()
                                 .requestPermissions();
-                            if (!granted && mounted) {
+                            if (!context.mounted) return;
+                            if (!granted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
@@ -115,11 +116,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           }
                           setState(() => _notificationsEnabled = val);
                           await HiveService().setNotificationsEnabled(val);
-                          if (context.mounted) {
-                            context.read<MedicineBloc>().add(
-                              RescheduleNotificationsEvent(),
-                            );
-                          }
+                          if (!context.mounted) return;
+                          context.read<MedicineBloc>().add(
+                            RescheduleNotificationsEvent(),
+                          );
                         },
                         icon: Icons.notifications_outlined,
                       ),

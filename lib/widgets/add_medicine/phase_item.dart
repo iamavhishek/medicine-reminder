@@ -1,6 +1,6 @@
+import 'package:ausadhi_khau/models/medicine_schedule.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:medicine_remainder_app/models/medicine_schedule.dart';
 
 class PhaseItem extends StatelessWidget {
   final int phaseNumber;

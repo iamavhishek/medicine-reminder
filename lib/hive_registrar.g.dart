@@ -3,8 +3,8 @@
 // Check in to version control
 
 import 'package:hive_ce/hive_ce.dart';
-import 'package:medicine_remainder_app/models/medicine.dart';
-import 'package:medicine_remainder_app/models/medicine_schedule.dart';
+import 'package:ausadhi_khau/models/medicine.dart';
+import 'package:ausadhi_khau/models/medicine_schedule.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {

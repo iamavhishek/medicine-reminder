@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:ausadhi_khau/models/medicine.dart';
+import 'package:ausadhi_khau/models/medicine_schedule.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-import 'package:medicine_remainder_app/models/medicine.dart';
-import 'package:medicine_remainder_app/models/medicine_schedule.dart';
 
 class HiveService {
   static final HiveService _instance = HiveService._internal();

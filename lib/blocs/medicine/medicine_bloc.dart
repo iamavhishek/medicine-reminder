@@ -1,7 +1,7 @@
+import 'package:ausadhi_khau/blocs/medicine/medicine_event.dart';
+import 'package:ausadhi_khau/blocs/medicine/medicine_state.dart';
+import 'package:ausadhi_khau/repositories/medicine_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medicine_remainder_app/blocs/medicine/medicine_event.dart';
-import 'package:medicine_remainder_app/blocs/medicine/medicine_state.dart';
-import 'package:medicine_remainder_app/repositories/medicine_repository.dart';
 
 class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
   final MedicineRepository _repository;

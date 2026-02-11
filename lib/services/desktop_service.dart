@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ausadhi_khau/repositories/medicine_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
-import 'package:medicine_remainder_app/repositories/medicine_repository.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -71,7 +71,7 @@ class DesktopService extends WindowListener with TrayListener {
   void _startPeriodicRefresh() {
     // Refresh every 12 hours
     Timer.periodic(const Duration(hours: 12), (timer) async {
-      debugPrint('DesktopService: Periodic background refresh triggerred');
+      debugPrint('DesktopService: Periodic background refresh triggered');
       try {
         await MedicineRepository().refreshAllNotifications();
       } catch (e) {
